@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PrompterPro — Teleprompter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    :root {
+      --bg-dark: #0a0a0f;
+      --bg-surface: #12121a;
+      --bg-elevated: #1a1a25;
+      --text-primary: #f0f0f5;
+      --text-secondary: #8a8a9a;
+      --accent: #00d4aa;
+      --accent-glow: rgba(0, 212, 170, 0.3);
+      --danger: #ff4757;
+      --border: #2a2a3a;
+      --radius: 12px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* App Layout */
+    .app {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      height: 100vh;
+      transition: grid-template-columns 0.3s ease;
+    }
+
+    .app.fullscreen {
+      grid-template-columns: 1fr 0;
+    }
+
+    .app.fullscreen .sidebar {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+
+    /* Prompter Area */
+    .prompter-container {
+      position: relative;
+      height: 100vh;
+      overflow: hidden;
+      background: linear-gradient(180deg, var(--bg-dark) 0%, #05050a 100%);
+    }
+
+    .prompter-content {
+      height: 100%;
+      overflow-y: auto;
+      padding: 40vh 60px 60vh;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+    }
+
+    .prompter-content::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Reading guide overlay */
+    .reading-guide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .reading-guide::before,
+    .reading-guide::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 35%;
+    }
+
+    .reading-guide::before {
+      top: 0;
+      background: linear-gradient(to bottom, var(--bg-dark) 0%, transparent 100%);
+    }
+
+    .reading-guide::after {
+      bottom: 0;
+      background: linear-gradient(to top, var(--bg-dark) 0%, transparent 100%);
+    }
+
+    .center-line {
+      position: absolute;
+      top: 50%;
+      left: 40px;
+      right: 40px;
+      height: 2px;
+      background: var(--accent);
+      opacity: 0.4;
+      transform: translateY(-50%);
+      pointer-events: none;
+      z-index: 11;
+    }
+
+    .center-line::before,
+    .center-line::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      transform: translateY(-50%);
+    }
+
+    .center-line::before { left: 0; }
+    .center-line::after { right: 0; }
+
+    /* Markdown Rendered Content */
+    .rendered-content {
+      max-width: 900px;
+      margin: 0 auto;
+      line-height: 1.7;
+      transition: transform 0.3s ease;
+    }
+
+    .rendered-content.mirror-h {
+      transform: scaleX(-1);
+    }
+
+    .rendered-content.mirror-v {
+      transform: scaleY(-1);
+    }
+
+    .rendered-content.mirror-h.mirror-v {
+      transform: scale(-1, -1);
+    }
+
+    .rendered-content h1 {
+      font-size: 2.5em;
+      font-weight: 700;
+      color: var(--accent);
+      margin: 1em 0 0.5em;
+      padding-bottom: 0.3em;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .rendered-content h2 {
+      font-size: 2em;
+      font-weight: 600;
+      color: #fff;
+      margin: 0.8em 0 0.4em;
+    }
+
+    .rendered-content h3 {
+      font-size: 1.5em;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin: 0.6em 0 0.3em;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .rendered-content p {
+      margin: 0.8em 0;
+    }
+
+    .rendered-content ul,
+    .rendered-content ol {
+      margin: 0.8em 0;
+      padding-left: 1.5em;
+    }
+
+    .rendered-content li {
+      margin: 0.5em 0;
+      padding-left: 0.5em;
+    }
+
+    .rendered-content li::marker {
+      color: var(--accent);
+    }
+
+    .rendered-content strong {
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .rendered-content em {
+      color: var(--accent);
+      font-style: italic;
+    }
+
+    .rendered-content blockquote {
+      border-left: 4px solid var(--accent);
+      padding-left: 1em;
+      margin: 1em 0;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    .rendered-content code {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--bg-elevated);
+      padding: 0.2em 0.5em;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+
+    .rendered-content hr {
+      border: none;
+      height: 2px;
+      background: var(--border);
+      margin: 2em 0;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background: var(--bg-surface);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .sidebar-header {
+      padding: 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 1.4rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--accent), #00a888);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab {
+      flex: 1;
+      padding: 14px;
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .tab.active {
+      color: var(--accent);
+    }
+
+    .tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 20%;
+      right: 20%;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 2px 2px 0 0;
+    }
+
+    .tab:hover {
+      color: var(--text-primary);
+    }
+
+    .tab-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* Editor */
+    .editor-area {
+      width: 100%;
+      height: 300px;
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      color: var(--text-primary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      resize: vertical;
+      transition: border-color 0.2s;
+    }
+
+    .editor-area:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .editor-area::placeholder {
+      color: var(--text-secondary);
+    }
+
+    /* Settings Groups */
+    .settings-group {
+      margin-bottom: 28px;
+    }
+
+    .settings-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .settings-value {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent);
+    }
+
+    /* Sliders */
+    .slider {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      background: var(--bg-dark);
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      background: var(--accent);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 8px var(--accent-glow);
+      transition: transform 0.2s;
+    }
+
+    .slider::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    /* Toggle Switches */
+    .toggle-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .toggle-btn {
+      flex: 1;
+      min-width: 100px;
+      padding: 12px 16px;
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .toggle-btn:hover {
+      border-color: var(--text-secondary);
+    }
+
+    .toggle-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--bg-dark);
+    }
+
+    .toggle-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Control Buttons */
+    .controls {
+      padding: 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 14px 20px;
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      border: none;
+      color: var(--bg-dark);
+    }
+
+    .btn-primary:hover {
+      background: #00e6b8;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px var(--accent-glow);
+    }
+
+    .btn-secondary {
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--text-secondary);
+    }
+
+    .btn-danger {
+      background: transparent;
+      border: 1px solid var(--danger);
+      color: var(--danger);
+    }
+
+    .btn-danger:hover {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Fullscreen Toggle */
+    .fullscreen-btn {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 100;
+      width: 44px;
+      height: 44px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .fullscreen-btn:hover {
+      background: var(--accent);
+      color: var(--bg-dark);
+      border-color: var(--accent);
+    }
+
+    .fullscreen-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Status Bar */
+    .status-bar {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      display: flex;
+      gap: 16px;
+      padding: 10px 16px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      z-index: 100;
+    }
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-secondary);
+    }
+
+    .status-dot.playing {
+      background: var(--accent);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* Keyboard shortcuts hint */
+    .shortcuts-hint {
+      margin-top: 20px;
+      padding: 16px;
+      background: var(--bg-dark);
+      border-radius: var(--radius);
+      font-size: 0.8rem;
+    }
+
+    .shortcut-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      color: var(--text-secondary);
+    }
+
+    .shortcut-key {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--bg-elevated);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 80px 40px;
+      color: var(--text-secondary);
+    }
+
+    .empty-state-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      background: var(--bg-elevated);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .empty-state-icon svg {
+      width: 40px;
+      height: 40px;
+      opacity: 0.5;
+    }
+
+    .empty-state h3 {
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    /* Color theme options */
+    .color-options {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .color-btn {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .color-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .color-btn.active {
+      border-color: white;
+      box-shadow: 0 0 0 2px var(--bg-dark);
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: fixed;
+        right: 0;
+        top: 0;
+        width: 100%;
+        max-width: 380px;
+        z-index: 1000;
+        transform: translateX(100%);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .mobile-toggle {
+        display: flex;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app" id="app">
+    <!-- Prompter Area -->
+    <div class="prompter-container">
+      <button class="fullscreen-btn" id="fullscreenBtn" title="Toggle Sidebar (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/>
+        </svg>
+      </button>
+
+      <div class="reading-guide">
+        <div class="center-line" id="centerLine"></div>
+      </div>
+
+      <div class="prompter-content" id="prompterContent">
+        <div class="rendered-content" id="renderedContent">
+          <div class="empty-state">
+            <div class="empty-state-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14,2 14,8 20,8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+                <polyline points="10,9 9,9 8,9"/>
+              </svg>
+            </div>
+            <h3>No Script Loaded</h3>
+            <p>Paste your Markdown in the Editor tab to begin</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="status-bar">
+        <div class="status-item">
+          <div class="status-dot" id="statusDot"></div>
+          <span id="statusText">Paused</span>
+        </div>
+        <div class="status-item">
+          <span id="scrollPosition">0%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <div class="logo-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polygon points="5,3 19,12 5,21"/>
+            </svg>
+          </div>
+          PrompterPro
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="editor">Editor</button>
+        <button class="tab" data-tab="settings">Settings</button>
+        <button class="tab" data-tab="shortcuts">Help</button>
+      </div>
+
+      <div class="tab-content">
+        <!-- Editor Panel -->
+        <div class="tab-panel active" id="editor-panel">
+          <textarea class="editor-area" id="scriptEditor" placeholder="# Your Script Title
+
+## Section One
+- First talking point
+- Second talking point
+- **Important emphasis**
+
+## Section Two
+Continue your script here...
+
+> Notes for yourself (blockquotes)
+
+---
+
+## Closing
+Your final thoughts..."></textarea>
+
+          <div style="margin-top: 16px;">
+            <button class="btn btn-primary" id="loadScript" style="width: 100%;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17,8 12,3 7,8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              Load Script
+            </button>
+          </div>
+        </div>
+
+        <!-- Settings Panel -->
+        <div class="tab-panel" id="settings-panel">
+          <div class="settings-group">
+            <div class="settings-label">
+              <span>Scroll Speed</span>
+              <span class="settings-value" id="speedValue">1.0x</span>
+            </div>
+            <input type="range" class="slider" id="speedSlider" min="0.2" max="4" step="0.1" value="1">
+          </div>
+
+          <div class="settings-group">
+            <div class="settings-label">
+              <span>Font Size</span>
+              <span class="settings-value" id="fontSizeValue">32px</span>
+            </div>
+            <input type="range" class="slider" id="fontSizeSlider" min="18" max="72" step="2" value="32">
+          </div>
+
+          <div class="settings-group">
+            <div class="settings-label">
+              <span>Line Height</span>
+              <span class="settings-value" id="lineHeightValue">1.7</span>
+            </div>
+            <input type="range" class="slider" id="lineHeightSlider" min="1.2" max="2.5" step="0.1" value="1.7">
+          </div>
+
+          <div class="settings-group">
+            <div class="settings-label">
+              <span>Mirror Mode</span>
+            </div>
+            <div class="toggle-group">
+              <button class="toggle-btn" id="mirrorH">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M8 3H5a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h3"/>
+                  <path d="M16 3h3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-3"/>
+                  <line x1="12" y1="2" x2="12" y2="22"/>
+                </svg>
+                Horizontal
+              </button>
+              <button class="toggle-btn" id="mirrorV">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 8V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v3"/>
+                  <path d="M3 16v3a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3"/>
+                  <line x1="2" y1="12" x2="22" y2="12"/>
+                </svg>
+                Vertical
+              </button>
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <div class="settings-label">
+              <span>Reading Guide</span>
+            </div>
+            <div class="toggle-group">
+              <button class="toggle-btn active" id="showGuide">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="3" y1="12" x2="21" y2="12"/>
+                  <circle cx="3" cy="12" r="1"/>
+                  <circle cx="21" cy="12" r="1"/>
+                </svg>
+                Show Guide
+              </button>
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <div class="settings-label">
+              <span>Accent Color</span>
+            </div>
+            <div class="color-options">
+              <button class="color-btn active" data-color="#00d4aa" style="background: #00d4aa;"></button>
+              <button class="color-btn" data-color="#6366f1" style="background: #6366f1;"></button>
+              <button class="color-btn" data-color="#f59e0b" style="background: #f59e0b;"></button>
+              <button class="color-btn" data-color="#ef4444" style="background: #ef4444;"></button>
+              <button class="color-btn" data-color="#ec4899" style="background: #ec4899;"></button>
+              <button class="color-btn" data-color="#8b5cf6" style="background: #8b5cf6;"></button>
+              <button class="color-btn" data-color="#06b6d4" style="background: #06b6d4;"></button>
+              <button class="color-btn" data-color="#ffffff" style="background: #ffffff;"></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shortcuts Panel -->
+        <div class="tab-panel" id="shortcuts-panel">
+          <div class="shortcuts-hint">
+            <div class="shortcut-row">
+              <span>Play / Pause</span>
+              <span class="shortcut-key">Space</span>
+            </div>
+            <div class="shortcut-row">
+              <span>Speed Up</span>
+              <span class="shortcut-key">↑</span>
+            </div>
+            <div class="shortcut-row">
+              <span>Speed Down</span>
+              <span class="shortcut-key">↓</span>
+            </div>
+            <div class="shortcut-row">
+              <span>Scroll Up</span>
+              <span class="shortcut-key">←</span>
+            </div>
+            <div class="shortcut-row">
+              <span>Scroll Down</span>
+              <span class="shortcut-key">→</span>
+            </div>
+            <div class="shortcut-row">
+              <span>Jump to Start</span>
+              <span class="shortcut-key">Home</span>
+            </div>
+            <div class="shortcut-row">
+              <span>Jump to End</span>
+              <span class="shortcut-key">End</span>
+            </div>
+            <div class="shortcut-row">
+              <span>Toggle Sidebar</span>
+              <span class="shortcut-key">F</span>
+            </div>
+            <div class="shortcut-row">
+              <span>Mirror Horizontal</span>
+              <span class="shortcut-key">H</span>
+            </div>
+            <div class="shortcut-row">
+              <span>Mirror Vertical</span>
+              <span class="shortcut-key">V</span>
+            </div>
+            <div class="shortcut-row">
+              <span>Reset Position</span>
+              <span class="shortcut-key">R</span>
+            </div>
+          </div>
+
+          <div style="margin-top: 24px; color: var(--text-secondary); font-size: 0.85rem; line-height: 1.6;">
+            <h4 style="color: var(--text-primary); margin-bottom: 8px;">Markdown Support</h4>
+            <p>This teleprompter supports standard Markdown formatting:</p>
+            <ul style="margin-top: 8px; padding-left: 20px;">
+              <li><code># H1</code>, <code>## H2</code>, <code>### H3</code></li>
+              <li><code>- Bullets</code> and <code>1. Numbered</code></li>
+              <li><code>**Bold**</code> and <code>*Italic*</code></li>
+              <li><code>> Blockquotes</code></li>
+              <li><code>---</code> Horizontal rules</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="btn btn-secondary" id="resetBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+            <path d="M3 3v5h5"/>
+          </svg>
+          Reset
+        </button>
+        <button class="btn btn-primary" id="playPauseBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="playIcon">
+            <polygon points="5,3 19,12 5,21"/>
+          </svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="pauseIcon" style="display: none;">
+            <rect x="6" y="4" width="4" height="16"/>
+            <rect x="14" y="4" width="4" height="16"/>
+          </svg>
+          <span id="playPauseText">Play</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // State
+    let isPlaying = false;
+    let scrollSpeed = 1;
+    let fontSize = 32;
+    let lineHeight = 1.7;
+    let mirrorH = false;
+    let mirrorV = false;
+    let showGuide = true;
+    let scrollInterval = null;
+
+    // Elements
+    const app = document.getElementById('app');
+    const prompterContent = document.getElementById('prompterContent');
+    const renderedContent = document.getElementById('renderedContent');
+    const scriptEditor = document.getElementById('scriptEditor');
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+    const scrollPosition = document.getElementById('scrollPosition');
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const playIcon = document.getElementById('playIcon');
+    const pauseIcon = document.getElementById('pauseIcon');
+    const playPauseText = document.getElementById('playPauseText');
+    const centerLine = document.getElementById('centerLine');
+
+    // Tabs
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(`${tab.dataset.tab}-panel`).classList.add('active');
+      });
+    });
+
+    // Load Script
+    document.getElementById('loadScript').addEventListener('click', () => {
+      const markdown = scriptEditor.value;
+      if (markdown.trim()) {
+        renderedContent.innerHTML = marked.parse(markdown);
+        updateStyles();
+        prompterContent.scrollTop = 0;
+        updateScrollPosition();
+      }
+    });
+
+    // Play/Pause
+    function togglePlay() {
+      isPlaying = !isPlaying;
+      updatePlayState();
+    }
+
+    function updatePlayState() {
+      if (isPlaying) {
+        playIcon.style.display = 'none';
+        pauseIcon.style.display = 'block';
+        playPauseText.textContent = 'Pause';
+        statusDot.classList.add('playing');
+        statusText.textContent = 'Playing';
+        startScrolling();
+      } else {
+        playIcon.style.display = 'block';
+        pauseIcon.style.display = 'none';
+        playPauseText.textContent = 'Play';
+        statusDot.classList.remove('playing');
+        statusText.textContent = 'Paused';
+        stopScrolling();
+      }
+    }
+
+    function startScrolling() {
+      stopScrolling();
+      scrollInterval = setInterval(() => {
+        prompterContent.scrollTop += scrollSpeed * 0.5;
+        updateScrollPosition();
+      }, 16);
+    }
+
+    function stopScrolling() {
+      if (scrollInterval) {
+        clearInterval(scrollInterval);
+        scrollInterval = null;
+      }
+    }
+
+    function updateScrollPosition() {
+      const maxScroll = prompterContent.scrollHeight - prompterContent.clientHeight;
+      const percent = maxScroll > 0 ? Math.round((prompterContent.scrollTop / maxScroll) * 100) : 0;
+      scrollPosition.textContent = `${percent}%`;
+    }
+
+    playPauseBtn.addEventListener('click', togglePlay);
+
+    // Reset
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      prompterContent.scrollTop = 0;
+      isPlaying = false;
+      updatePlayState();
+      updateScrollPosition();
+    });
+
+    // Speed Slider
+    const speedSlider = document.getElementById('speedSlider');
+    const speedValue = document.getElementById('speedValue');
+    speedSlider.addEventListener('input', (e) => {
+      scrollSpeed = parseFloat(e.target.value);
+      speedValue.textContent = `${scrollSpeed.toFixed(1)}x`;
+    });
+
+    // Font Size Slider
+    const fontSizeSlider = document.getElementById('fontSizeSlider');
+    const fontSizeValue = document.getElementById('fontSizeValue');
+    fontSizeSlider.addEventListener('input', (e) => {
+      fontSize = parseInt(e.target.value);
+      fontSizeValue.textContent = `${fontSize}px`;
+      updateStyles();
+    });
+
+    // Line Height Slider
+    const lineHeightSlider = document.getElementById('lineHeightSlider');
+    const lineHeightValue = document.getElementById('lineHeightValue');
+    lineHeightSlider.addEventListener('input', (e) => {
+      lineHeight = parseFloat(e.target.value);
+      lineHeightValue.textContent = lineHeight.toFixed(1);
+      updateStyles();
+    });
+
+    // Mirror Toggles
+    document.getElementById('mirrorH').addEventListener('click', function() {
+      mirrorH = !mirrorH;
+      this.classList.toggle('active', mirrorH);
+      updateStyles();
+    });
+
+    document.getElementById('mirrorV').addEventListener('click', function() {
+      mirrorV = !mirrorV;
+      this.classList.toggle('active', mirrorV);
+      updateStyles();
+    });
+
+    // Guide Toggle
+    document.getElementById('showGuide').addEventListener('click', function() {
+      showGuide = !showGuide;
+      this.classList.toggle('active', showGuide);
+      centerLine.style.display = showGuide ? 'block' : 'none';
+    });
+
+    // Color Options
+    document.querySelectorAll('.color-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        document.documentElement.style.setProperty('--accent', this.dataset.color);
+        document.documentElement.style.setProperty('--accent-glow', this.dataset.color + '40');
+      });
+    });
+
+    // Fullscreen Toggle
+    document.getElementById('fullscreenBtn').addEventListener('click', () => {
+      app.classList.toggle('fullscreen');
+    });
+
+    function updateStyles() {
+      renderedContent.style.fontSize = `${fontSize}px`;
+      renderedContent.style.lineHeight = lineHeight;
+      
+      renderedContent.classList.toggle('mirror-h', mirrorH);
+      renderedContent.classList.toggle('mirror-v', mirrorV);
+    }
+
+    // Keyboard Shortcuts
+    document.addEventListener('keydown', (e) => {
+      // Don't trigger if typing in textarea
+      if (e.target.tagName === 'TEXTAREA') return;
+
+      switch(e.code) {
+        case 'Space':
+          e.preventDefault();
+          togglePlay();
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          scrollSpeed = Math.min(4, scrollSpeed + 0.2);
+          speedSlider.value = scrollSpeed;
+          speedValue.textContent = `${scrollSpeed.toFixed(1)}x`;
+          break;
+        case 'ArrowDown':
+          e.preventDefault();
+          scrollSpeed = Math.max(0.2, scrollSpeed - 0.2);
+          speedSlider.value = scrollSpeed;
+          speedValue.textContent = `${scrollSpeed.toFixed(1)}x`;
+          break;
+        case 'ArrowLeft':
+          e.preventDefault();
+          prompterContent.scrollTop -= 50;
+          updateScrollPosition();
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          prompterContent.scrollTop += 50;
+          updateScrollPosition();
+          break;
+        case 'Home':
+          e.preventDefault();
+          prompterContent.scrollTop = 0;
+          updateScrollPosition();
+          break;
+        case 'End':
+          e.preventDefault();
+          prompterContent.scrollTop = prompterContent.scrollHeight;
+          updateScrollPosition();
+          break;
+        case 'KeyF':
+          app.classList.toggle('fullscreen');
+          break;
+        case 'KeyH':
+          mirrorH = !mirrorH;
+          document.getElementById('mirrorH').classList.toggle('active', mirrorH);
+          updateStyles();
+          break;
+        case 'KeyV':
+          mirrorV = !mirrorV;
+          document.getElementById('mirrorV').classList.toggle('active', mirrorV);
+          updateStyles();
+          break;
+        case 'KeyR':
+          prompterContent.scrollTop = 0;
+          isPlaying = false;
+          updatePlayState();
+          updateScrollPosition();
+          break;
+      }
+    });
+
+    // Track scroll position
+    prompterContent.addEventListener('scroll', updateScrollPosition);
+
+    // Initialize
+    updateStyles();
+    updateScrollPosition();
+  </script>
+</body>
+</html>
