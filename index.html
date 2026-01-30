@@ -963,6 +963,136 @@ Your final thoughts..."></textarea>
       });
     });
 
+    // Handle paste - convert HTML to Markdown
+    scriptEditor.addEventListener('paste', (e) => {
+      const html = e.clipboardData.getData('text/html');
+      if (html) {
+        e.preventDefault();
+        const markdown = htmlToMarkdown(html);
+        
+        // Insert at cursor position
+        const start = scriptEditor.selectionStart;
+        const end = scriptEditor.selectionEnd;
+        const text = scriptEditor.value;
+        scriptEditor.value = text.substring(0, start) + markdown + text.substring(end);
+        scriptEditor.selectionStart = scriptEditor.selectionEnd = start + markdown.length;
+      }
+    });
+
+    // Convert HTML to Markdown
+    function htmlToMarkdown(html) {
+      const temp = document.createElement('div');
+      temp.innerHTML = html;
+      
+      function processNode(node, listLevel = 0) {
+        let result = '';
+        
+        for (const child of node.childNodes) {
+          if (child.nodeType === Node.TEXT_NODE) {
+            result += child.textContent;
+          } else if (child.nodeType === Node.ELEMENT_NODE) {
+            const tag = child.tagName.toLowerCase();
+            const indent = '  '.repeat(listLevel);
+            
+            switch (tag) {
+              case 'h1':
+                result += `\n# ${child.textContent.trim()}\n\n`;
+                break;
+              case 'h2':
+                result += `\n## ${child.textContent.trim()}\n\n`;
+                break;
+              case 'h3':
+                result += `\n### ${child.textContent.trim()}\n\n`;
+                break;
+              case 'h4':
+                result += `\n#### ${child.textContent.trim()}\n\n`;
+                break;
+              case 'p':
+                const pContent = processNode(child, listLevel).trim();
+                if (pContent) result += `${pContent}\n\n`;
+                break;
+              case 'br':
+                result += '\n';
+                break;
+              case 'strong':
+              case 'b':
+                result += `**${processNode(child, listLevel).trim()}**`;
+                break;
+              case 'em':
+              case 'i':
+                result += `*${processNode(child, listLevel).trim()}*`;
+                break;
+              case 'u':
+                result += `_${processNode(child, listLevel).trim()}_`;
+                break;
+              case 'ul':
+                result += '\n' + processNode(child, listLevel) + '\n';
+                break;
+              case 'ol':
+                let olResult = '\n';
+                let counter = 1;
+                for (const li of child.children) {
+                  if (li.tagName.toLowerCase() === 'li') {
+                    const liContent = processNode(li, listLevel + 1).trim();
+                    olResult += `${indent}${counter}. ${liContent}\n`;
+                    counter++;
+                  }
+                }
+                result += olResult + '\n';
+                break;
+              case 'li':
+                // Check if parent is ul or ol
+                const parent = child.parentElement;
+                if (parent && parent.tagName.toLowerCase() === 'ul') {
+                  const liContent = processNode(child, listLevel + 1).trim();
+                  result += `${indent}- ${liContent}\n`;
+                } else {
+                  // ol handles its own li processing
+                  result += processNode(child, listLevel);
+                }
+                break;
+              case 'blockquote':
+                const bqLines = processNode(child, listLevel).trim().split('\n');
+                result += bqLines.map(line => `> ${line}`).join('\n') + '\n\n';
+                break;
+              case 'hr':
+                result += '\n---\n\n';
+                break;
+              case 'a':
+                const href = child.getAttribute('href');
+                const linkText = child.textContent.trim();
+                result += href ? `[${linkText}](${href})` : linkText;
+                break;
+              case 'code':
+                result += `\`${child.textContent}\``;
+                break;
+              case 'pre':
+                result += `\n\`\`\`\n${child.textContent}\n\`\`\`\n\n`;
+                break;
+              case 'div':
+              case 'span':
+              case 'section':
+              case 'article':
+                result += processNode(child, listLevel);
+                break;
+              default:
+                result += processNode(child, listLevel);
+            }
+          }
+        }
+        
+        return result;
+      }
+      
+      let markdown = processNode(temp);
+      
+      // Clean up extra newlines
+      markdown = markdown.replace(/\n{3,}/g, '\n\n');
+      markdown = markdown.trim();
+      
+      return markdown;
+    }
+
     // Load Script
     document.getElementById('loadScript').addEventListener('click', () => {
       const markdown = scriptEditor.value;
