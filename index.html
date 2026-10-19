@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>PrompterPro</title>
+<meta name="description" content="A simple teleprompter for coaches and presenters who already have a script. Paste it, set a pace, press play.">
+<style>
+  :root {
+    --ink: #0a0a0f;
+    --paper: #f3f3f6;
+    --teal: #00d4aa;
+    --muted: #9a9aab;
+    --rule: #262633;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { background: var(--ink); color: var(--paper); font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.55; }
+  a { color: inherit; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+  header.top { display: flex; justify-content: space-between; align-items: center; padding: 22px 0; }
+  .brand { font-weight: 700; letter-spacing: -0.01em; font-size: 1.05rem; display: flex; gap: 10px; align-items: center; }
+  .brand i { width: 22px; height: 22px; border-radius: 6px; background: var(--teal); display: inline-block; clip-path: polygon(28% 18%, 82% 50%, 28% 82%); }
+  .top a { text-decoration: none; color: var(--muted); font-size: .95rem; }
+  .top a:hover { color: var(--paper); }
+
+  .hero { padding: 72px 0 40px; }
+  .hero h1 { font-size: clamp(3rem, 10.5vw, 9.5rem); line-height: .92; letter-spacing: -0.045em; font-weight: 800; max-width: 11ch; }
+  .hero h1 em { font-style: normal; color: var(--teal); }
+  .hero p.lede { margin-top: 32px; font-size: clamp(1.15rem, 2.2vw, 1.5rem); max-width: 34ch; color: #d4d4de; }
+  .actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 36px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; padding: 0 26px; border-radius: 999px; font-weight: 650; text-decoration: none; font-size: 1.02rem; border: 1px solid var(--rule); }
+  .btn.primary { background: var(--teal); color: var(--ink); border-color: var(--teal); }
+  .btn.primary:hover { filter: brightness(1.08); }
+  .btn.ghost:hover { border-color: var(--paper); }
+
+  .demo { margin: 56px 0 24px; border: 1px solid var(--rule); border-radius: 18px; overflow: hidden; height: min(72vh, 640px); background: #05050a; }
+  .demo iframe { width: 100%; height: 100%; border: 0; display: block; }
+  .demo-note { color: var(--muted); font-size: .92rem; }
+
+  section.block { padding: 96px 0 24px; border-top: 1px solid var(--rule); margin-top: 72px; }
+  .label { color: var(--teal); font-weight: 650; font-size: 1rem; margin-bottom: 18px; }
+  h2 { font-size: clamp(2.2rem, 6vw, 5rem); line-height: 1; letter-spacing: -0.035em; font-weight: 780; max-width: 16ch; }
+
+  ol.steps { list-style: none; margin-top: 48px; counter-reset: s; }
+  ol.steps li { counter-increment: s; display: grid; grid-template-columns: 4.5rem 1fr; gap: 8px 24px; padding: 28px 0; border-top: 1px solid var(--rule); }
+  ol.steps li::before { content: "0" counter(s); color: var(--teal); font-weight: 700; font-size: 1.4rem; }
+  ol.steps strong { display: block; font-size: clamp(1.4rem, 3vw, 2.1rem); letter-spacing: -0.02em; line-height: 1.15; }
+  ol.steps span { color: #c4c4d0; display: block; margin-top: 6px; max-width: 60ch; }
+
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-top: 48px; }
+  .two h3 { font-size: 1.15rem; margin-bottom: 14px; }
+  .two ul { list-style: none; }
+  .two li { padding: 12px 0; border-top: 1px solid var(--rule); color: #d4d4de; }
+
+  .buy { display: grid; grid-template-columns: 1.2fr 1fr; gap: 48px; margin-top: 48px; align-items: start; }
+  .buy p { color: #d4d4de; margin-bottom: 14px; max-width: 52ch; }
+  .pending { border: 1px dashed #4a4a5c; border-radius: 14px; padding: 22px; color: var(--muted); font-size: .95rem; }
+  .pending b { color: var(--paper); }
+
+  details { border-top: 1px solid var(--rule); padding: 20px 0; }
+  details summary { cursor: pointer; font-size: 1.15rem; font-weight: 600; list-style: none; }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::after { content: "+"; float: right; color: var(--teal); font-weight: 400; }
+  details[open] summary::after { content: "\2212"; }
+  details p { margin-top: 12px; color: #c4c4d0; max-width: 70ch; }
+  .faq { margin-top: 40px; }
+
+  footer { padding: 72px 0 48px; color: var(--muted); font-size: .9rem; border-top: 1px solid var(--rule); margin-top: 96px; }
+
+  @media (max-width: 760px) {
+    .hero { padding-top: 40px; }
+    .demo { height: 70vh; }
+    .two, .buy { grid-template-columns: 1fr; gap: 32px; }
+    ol.steps li { grid-template-columns: 3rem 1fr; }
+    section.block { padding-top: 64px; margin-top: 48px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><i aria-hidden="true"></i>PrompterPro</div>
+    <a href="#buy">Get it</a>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Say it the way you <em>wrote it.</em></h1>
+      <p class="lede">A simple teleprompter for coaches and presenters who already have a script. Paste it, set a pace, press play.</p>
+      <div class="actions">
+        <a class="btn primary" href="app/index.html?sample">Try it free in your browser</a>
+        <a class="btn ghost" href="#buy">Get the download</a>
+      </div>
+    </section>
+
+    <div class="demo">
+      <iframe src="app/index.html?sample" title="PrompterPro live demo" loading="lazy"></iframe>
+    </div>
+    <p class="demo-note">This is the real app with a sample script. Tap the text to start and stop. Use &minus; and + to change the speed.</p>
+
+    <section class="block" aria-labelledby="how">
+      <p class="label">How it works</p>
+      <h2 id="how">Three steps, then you are reading.</h2>
+      <ol class="steps">
+        <li><div><strong>Paste your script.</strong><span>Plain text works. Headings, bullet points and bold help you see where you are in the script.</span></div></li>
+        <li><div><strong>Set a pace you can speak to.</strong><span>Pick the scroll speed, text size and line spacing. A guide line keeps your place. Mirror modes are there if you read off glass.</span></div></li>
+        <li><div><strong>Tap to start. Tap to stop.</strong><span>Tap the script or press Space. Nudge the speed with &minus; and + while you read. Reset takes you back to the top.</span></div></li>
+      </ol>
+    </section>
+
+    <section class="block" aria-labelledby="honest">
+      <p class="label">What you get</p>
+      <h2 id="honest">Small on purpose.</h2>
+      <div class="two">
+        <div>
+          <h3>It does</h3>
+          <ul>
+            <li>Scroll your script at a steady pace you control</li>
+            <li>Save your script and settings in your browser</li>
+            <li>Export a backup file and import it again later</li>
+            <li>Run from a folder on your computer with no account and no internet connection</li>
+            <li>Ask the screen to stay awake while it plays, where the browser allows it</li>
+          </ul>
+        </div>
+        <div>
+          <h3>It does not</h3>
+          <ul>
+            <li>Record video or audio. Use your usual camera app alongside it</li>
+            <li>Follow your voice</li>
+            <li>Sync scripts to the cloud</li>
+            <li>Come with a remote or prompter glass</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="buy" aria-labelledby="buyh">
+      <p class="label">Get it</p>
+      <h2 id="buyh">One download. Yours to keep.</h2>
+      <div class="buy">
+        <div>
+          <p>You get the app folder, a quick-start guide and a sample script. Unzip it, open <b>index.html</b> in your browser, and you are ready.</p>
+          <p>Your scripts stay on your device. There is nothing to sign up for inside the app.</p>
+        </div>
+        <!-- REVIEW DRAFT: replace this box with the approved price, checkout link, license, refund and support terms. Do not publish with this box showing. -->
+        <div class="pending" data-checkout="pending-approval">
+          <p><b>Checkout goes here after approval.</b></p>
+          <p>Price, license, refund terms and support contact are not set yet.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" aria-labelledby="faq">
+      <p class="label">Questions</p>
+      <h2 id="faq">Before you buy.</h2>
+      <div class="faq">
+        <details><summary>What do I need to run it?</summary><p>A current desktop browser. Unzip the whole folder and open index.html. Keep the files together. [Supported browsers and systems: set after the owner device rehearsal.]</p></details>
+        <details><summary>Does it work on a phone or tablet?</summary><p>The free browser version runs on phones and tablets and has been checked in iPhone and iPad simulators. The download is meant for a computer. [Phone and tablet support is promised only after a real-device rehearsal.]</p></details>
+        <details><summary>Where are my scripts kept?</summary><p>In your browser on your device. Clearing browser data or using private browsing can remove them, so use Export backup for anything you want to keep.</p></details>
+        <details><summary>Can I use it with prompter glass?</summary><p>There are horizontal and vertical mirror modes. Specific glass and remotes have not been tested.</p></details>
+        <details><summary>What if it does not work for me?</summary><p>[Refund terms and support contact: pending approval.]</p></details>
+      </div>
+    </section>
+  </main>
+
+  <footer>PrompterPro &middot; Review draft, not published.</footer>
+</div>
+</body>
+</html>

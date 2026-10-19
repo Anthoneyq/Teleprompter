@@ -497,8 +497,13 @@
       top: 20px;
       left: 20px;
       z-index: 100;
-      width: 44px;
+      min-width: 44px;
       height: 44px;
+      padding: 0 14px;
+      gap: 8px;
+      font: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
       background: var(--bg-elevated);
       border: 1px solid var(--border);
       border-radius: 10px;
@@ -689,16 +694,33 @@
       .editor-area { height: 28dvh; min-height: 140px; }
       .empty-state { padding: 20px 0; }
     }
+    .empty-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 28px; font-size: 1rem; line-height: 1.2; }
+    .empty-actions .btn { flex: 0 1 auto; min-height: 48px; padding: 12px 20px; }
+    .prompter-content { cursor: default; }
+    .empty-state h3 { text-transform: none; letter-spacing: 0; font-size: 1.4em; font-weight: 600; }
+    .empty-state p { font-size: 0.7em; line-height: 1.5; }
+    .speed-nudge button { min-width: 36px; height: 32px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text-primary); font: inherit; font-size: 1.1rem; cursor: pointer; touch-action: manipulation; }
+    .speed-nudge button:hover { border-color: var(--accent); }
+    .status-bar { align-items: center; padding: 6px 10px 6px 16px; }
+    @media (max-width: 900px) {
+      .status-bar { left: 12px; right: 12px; bottom: 12px; justify-content: space-between; }
+      .speed-nudge button { min-width: 44px; height: 40px; }
+      .empty-state h3 { font-size: 1.6rem; }
+      .empty-state p { font-size: 1.1rem; }
+      .fullscreen-btn { top: 12px; left: 12px; }
+    }
   </style>
 </head>
 <body>
   <div class="app" id="app">
     <!-- Prompter Area -->
     <div class="prompter-container">
-      <button class="fullscreen-btn" id="fullscreenBtn" title="Toggle controls (F)" aria-label="Toggle controls" aria-controls="sidebar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/>
+      <button class="fullscreen-btn" id="fullscreenBtn" title="Show or hide controls (F)" aria-label="Show or hide controls" aria-controls="sidebar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/>
+          <circle cx="9" cy="6" r="2" fill="currentColor"/><circle cx="15" cy="12" r="2" fill="currentColor"/><circle cx="7" cy="18" r="2" fill="currentColor"/>
         </svg>
+        <span>Controls</span>
       </button>
 
       <div class="reading-guide">
@@ -717,8 +739,12 @@
                 <polyline points="10,9 9,9 8,9"/>
               </svg>
             </div>
-            <h3>No Script Loaded</h3>
-            <p>Paste your Markdown in the Editor tab to begin</p>
+            <h3>No script loaded</h3>
+            <p>Paste or type your script in the editor, then choose Load Script.</p>
+            <div class="empty-actions">
+              <button class="btn btn-primary" id="openEditor" type="button">Open the editor</button>
+              <button class="btn btn-secondary" id="trySample" type="button">Try a sample script</button>
+            </div>
           </div>
         </div>
       </div>
@@ -730,6 +756,11 @@
         </div>
         <div class="status-item">
           <span id="scrollPosition">0%</span>
+        </div>
+        <div class="status-item speed-nudge">
+          <button type="button" id="slowerBtn" aria-label="Slower" title="Slower">&minus;</button>
+          <span id="speedReadout" aria-live="polite">1.0x</span>
+          <button type="button" id="fasterBtn" aria-label="Faster" title="Faster">+</button>
         </div>
       </div>
     </div>
@@ -923,6 +954,11 @@ Your final thoughts..."></textarea>
               <span>Reset Position</span>
               <span class="shortcut-key">R</span>
             </div>
+          </div>
+
+          <div style="margin-top: 24px; color: var(--text-secondary); font-size: 0.85rem; line-height: 1.6;">
+            <h4 style="color: var(--text-primary); margin-bottom: 8px;">Reading without a keyboard</h4>
+            <p>Tap the script to play or pause. Use &minus; and + at the bottom of the screen to change speed while you read. While playing, the app asks the browser to keep the screen awake; some browsers do not allow this.</p>
           </div>
 
           <div style="margin-top: 24px; color: var(--text-secondary); font-size: 0.85rem; line-height: 1.6;">

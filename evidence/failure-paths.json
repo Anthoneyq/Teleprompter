@@ -1,0 +1,11 @@
+{
+  "checks": [
+    "blocked storage at startup: local-folder rendering and export survive",
+    "failed export reports failure and preserves editor",
+    "inert renderer remains safe with CSP disabled in test context",
+    "edit during asynchronous import prevents replacement",
+    "minimum 0.2x scroll advances",
+    "clean demo stills generated from supplied sample"
+  ],
+  "errors": []
+}

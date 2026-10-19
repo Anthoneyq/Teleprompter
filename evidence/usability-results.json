@@ -1,0 +1,320 @@
+{
+  "date": "2026-10-19T14:49:31.535Z",
+  "checks": [
+    {
+      "name": "chromium desktop: first run shows labelled Controls button and sample/editor actions",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium desktop: Try a sample loads, saves and (on phones) leaves the reading view clear",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium desktop: tap/click script toggles play and pause; screen wake lock requested and released",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium desktop: on-screen speed buttons change, clamp and save speed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium desktop: ?sample opens a demo on first visit and never overwrites a saved script",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium desktop: sample never silently replaces typed text",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium phone: first run shows labelled Controls button and sample/editor actions",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium phone: Open the editor opens controls with the editor focused",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium phone: Try a sample loads, saves and (on phones) leaves the reading view clear",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium phone: tap/click script toggles play and pause; screen wake lock requested and released",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium phone: on-screen speed buttons change, clamp and save speed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium phone: ?sample opens a demo on first visit and never overwrites a saved script",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium phone: sample never silently replaces typed text",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium small-phone: first run shows labelled Controls button and sample/editor actions",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium small-phone: Open the editor opens controls with the editor focused",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium small-phone: Try a sample loads, saves and (on phones) leaves the reading view clear",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium small-phone: tap/click script toggles play and pause; screen wake lock requested and released",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium small-phone: on-screen speed buttons change, clamp and save speed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium small-phone: ?sample opens a demo on first visit and never overwrites a saved script",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium small-phone: sample never silently replaces typed text",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit desktop: first run shows labelled Controls button and sample/editor actions",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit desktop: Try a sample loads, saves and (on phones) leaves the reading view clear",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit desktop: tap/click script toggles play and pause; screen wake lock requested and released",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit desktop: on-screen speed buttons change, clamp and save speed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit desktop: ?sample opens a demo on first visit and never overwrites a saved script",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit desktop: sample never silently replaces typed text",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit phone: first run shows labelled Controls button and sample/editor actions",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit phone: Open the editor opens controls with the editor focused",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit phone: Try a sample loads, saves and (on phones) leaves the reading view clear",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit phone: tap/click script toggles play and pause; screen wake lock requested and released",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit phone: on-screen speed buttons change, clamp and save speed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit phone: ?sample opens a demo on first visit and never overwrites a saved script",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit phone: sample never silently replaces typed text",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit small-phone: first run shows labelled Controls button and sample/editor actions",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit small-phone: Open the editor opens controls with the editor focused",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit small-phone: Try a sample loads, saves and (on phones) leaves the reading view clear",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit small-phone: tap/click script toggles play and pause; screen wake lock requested and released",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit small-phone: on-screen speed buttons change, clamp and save speed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit small-phone: ?sample opens a demo on first visit and never overwrites a saved script",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit small-phone: sample never silently replaces typed text",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox desktop: first run shows labelled Controls button and sample/editor actions",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox desktop: Try a sample loads, saves and (on phones) leaves the reading view clear",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox desktop: tap/click script toggles play and pause; screen wake lock requested and released",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox desktop: on-screen speed buttons change, clamp and save speed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox desktop: ?sample opens a demo on first visit and never overwrites a saved script",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox desktop: sample never silently replaces typed text",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox phone: first run shows labelled Controls button and sample/editor actions",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox phone: Open the editor opens controls with the editor focused",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox phone: Try a sample loads, saves and (on phones) leaves the reading view clear",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox phone: tap/click script toggles play and pause; screen wake lock requested and released",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox phone: on-screen speed buttons change, clamp and save speed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox phone: ?sample opens a demo on first visit and never overwrites a saved script",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox phone: sample never silently replaces typed text",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox small-phone: first run shows labelled Controls button and sample/editor actions",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox small-phone: Open the editor opens controls with the editor focused",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox small-phone: Try a sample loads, saves and (on phones) leaves the reading view clear",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox small-phone: tap/click script toggles play and pause; screen wake lock requested and released",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox small-phone: on-screen speed buttons change, clamp and save speed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox small-phone: ?sample opens a demo on first visit and never overwrites a saved script",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox small-phone: sample never silently replaces typed text",
+      "pass": true,
+      "detail": ""
+    }
+  ],
+  "errors": [],
+  "engines": {
+    "chromium": {
+      "available": true,
+      "version": "151.0.7922.34"
+    },
+    "webkit": {
+      "available": true,
+      "version": "26.6"
+    },
+    "firefox": {
+      "available": true,
+      "version": "155.0"
+    }
+  }
+}

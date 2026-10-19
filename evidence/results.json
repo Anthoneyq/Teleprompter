@@ -1,0 +1,381 @@
+{
+  "date": "2026-10-19T14:50:37.518Z",
+  "checks": [
+    {
+      "name": "chromium: load Markdown",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium: scroll, pause, reset",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium: script and all settings restore paused",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium: repeated saves stable",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium: immediate reload preserves last edit",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium: repeated exports exact",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium: download cancellation never claims disk success",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium: export/import round trip",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium: import cancellation preserves work",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium: invalid/truncated/version/range/oversized imports atomic",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium: failed write keeps previous save and current draft exports",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium: corrupt save protected; explicit recovery works",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium: competing tabs cannot silently overwrite",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium: active HTML, handlers, SVG, URL schemes, clobbering inert; no remote requests",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium: 157K-character script via synthetic input",
+      "pass": true,
+      "detail": "161ms including browser actions"
+    },
+    {
+      "name": "chromium: stops at script end",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium: empty load clears prior script",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium: desktop layout and controls",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium: tablet layout and controls",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium: phone layout and controls",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium: small-phone layout and controls",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium: landscape layout and controls",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium: keyboard shortcuts",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "chromium: file:// offline folder load and restore",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit: load Markdown",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit: scroll, pause, reset",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit: script and all settings restore paused",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit: repeated saves stable",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit: immediate reload preserves last edit",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit: repeated exports exact",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit: download cancellation never claims disk success",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit: export/import round trip",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit: import cancellation preserves work",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit: invalid/truncated/version/range/oversized imports atomic",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit: failed write keeps previous save and current draft exports",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit: corrupt save protected; explicit recovery works",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit: competing tabs cannot silently overwrite",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit: active HTML, handlers, SVG, URL schemes, clobbering inert; no remote requests",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit: 157K-character script via synthetic input",
+      "pass": true,
+      "detail": "187ms including browser actions"
+    },
+    {
+      "name": "webkit: stops at script end",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit: empty load clears prior script",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit: desktop layout and controls",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit: tablet layout and controls",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit: phone layout and controls",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit: small-phone layout and controls",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit: landscape layout and controls",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit: keyboard shortcuts",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webkit: file:// offline folder load and restore",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox: load Markdown",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox: scroll, pause, reset",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox: script and all settings restore paused",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox: repeated saves stable",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox: immediate reload preserves last edit",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox: repeated exports exact",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox: download cancellation never claims disk success",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox: export/import round trip",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox: import cancellation preserves work",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox: invalid/truncated/version/range/oversized imports atomic",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox: failed write keeps previous save and current draft exports",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox: corrupt save protected; explicit recovery works",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox: competing tabs cannot silently overwrite",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox: active HTML, handlers, SVG, URL schemes, clobbering inert; no remote requests",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox: 157K-character script via synthetic input",
+      "pass": true,
+      "detail": "165ms including browser actions"
+    },
+    {
+      "name": "firefox: stops at script end",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox: empty load clears prior script",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox: desktop layout and controls",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox: tablet layout and controls",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox: phone layout and controls",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox: small-phone layout and controls",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox: landscape layout and controls",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox: keyboard shortcuts",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "firefox: file:// offline folder load and restore",
+      "pass": true,
+      "detail": ""
+    }
+  ],
+  "errors": [],
+  "engines": {
+    "chromium": {
+      "available": true,
+      "version": "151.0.7922.34"
+    },
+    "webkit": {
+      "available": true,
+      "version": "26.6"
+    },
+    "firefox": {
+      "available": true,
+      "version": "155.0"
+    }
+  },
+  "externalRequests": []
+}

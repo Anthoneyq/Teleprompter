@@ -1,0 +1,72 @@
+PASS chromium: load Markdown
+PASS chromium: scroll, pause, reset
+PASS chromium: script and all settings restore paused
+PASS chromium: repeated saves stable
+PASS chromium: immediate reload preserves last edit
+PASS chromium: repeated exports exact
+PASS chromium: download cancellation never claims disk success
+PASS chromium: export/import round trip
+PASS chromium: import cancellation preserves work
+PASS chromium: invalid/truncated/version/range/oversized imports atomic
+PASS chromium: failed write keeps previous save and current draft exports
+PASS chromium: corrupt save protected; explicit recovery works
+PASS chromium: competing tabs cannot silently overwrite
+PASS chromium: active HTML, handlers, SVG, URL schemes, clobbering inert; no remote requests
+PASS chromium: 157K-character script via synthetic input
+PASS chromium: stops at script end
+PASS chromium: empty load clears prior script
+PASS chromium: desktop layout and controls
+PASS chromium: tablet layout and controls
+PASS chromium: phone layout and controls
+PASS chromium: small-phone layout and controls
+PASS chromium: landscape layout and controls
+PASS chromium: keyboard shortcuts
+PASS chromium: file:// offline folder load and restore
+PASS webkit: load Markdown
+PASS webkit: scroll, pause, reset
+PASS webkit: script and all settings restore paused
+PASS webkit: repeated saves stable
+PASS webkit: immediate reload preserves last edit
+PASS webkit: repeated exports exact
+PASS webkit: download cancellation never claims disk success
+PASS webkit: export/import round trip
+PASS webkit: import cancellation preserves work
+PASS webkit: invalid/truncated/version/range/oversized imports atomic
+PASS webkit: failed write keeps previous save and current draft exports
+PASS webkit: corrupt save protected; explicit recovery works
+PASS webkit: competing tabs cannot silently overwrite
+PASS webkit: active HTML, handlers, SVG, URL schemes, clobbering inert; no remote requests
+PASS webkit: 157K-character script via synthetic input
+PASS webkit: stops at script end
+PASS webkit: empty load clears prior script
+PASS webkit: desktop layout and controls
+PASS webkit: tablet layout and controls
+PASS webkit: phone layout and controls
+PASS webkit: small-phone layout and controls
+PASS webkit: landscape layout and controls
+PASS webkit: keyboard shortcuts
+PASS webkit: file:// offline folder load and restore
+PASS firefox: load Markdown
+PASS firefox: scroll, pause, reset
+PASS firefox: script and all settings restore paused
+PASS firefox: repeated saves stable
+PASS firefox: immediate reload preserves last edit
+PASS firefox: repeated exports exact
+PASS firefox: download cancellation never claims disk success
+PASS firefox: export/import round trip
+PASS firefox: import cancellation preserves work
+PASS firefox: invalid/truncated/version/range/oversized imports atomic
+PASS firefox: failed write keeps previous save and current draft exports
+PASS firefox: corrupt save protected; explicit recovery works
+PASS firefox: competing tabs cannot silently overwrite
+PASS firefox: active HTML, handlers, SVG, URL schemes, clobbering inert; no remote requests
+PASS firefox: 157K-character script via synthetic input
+PASS firefox: stops at script end
+PASS firefox: empty load clears prior script
+PASS firefox: desktop layout and controls
+PASS firefox: tablet layout and controls
+PASS firefox: phone layout and controls
+PASS firefox: small-phone layout and controls
+PASS firefox: landscape layout and controls
+PASS firefox: keyboard shortcuts
+PASS firefox: file:// offline folder load and restore

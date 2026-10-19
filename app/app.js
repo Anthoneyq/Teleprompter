@@ -7,6 +7,8 @@ const colors = [...document.querySelectorAll('.color-btn')].map(b => b.dataset.c
 let settings = {...defaults}, playing = false, frame = null, previousTime = null;
 let scrollTarget = 0;
 let loaded = false, knownStored = null, protectedStored = false, dirty = false, editRevision = 0;
+const SAMPLE = '# One useful next step\n\nTake a breath before you begin.\n\n## Start small\n\nYou do not need to change everything today.\n\nChoose **one useful action** you can repeat.\n\n- Make the next step clear.\n- Make it manageable.\n- Give yourself time to practise.\n\n> Pause here. Look up.\n\n## Make it specific\n\nInstead of saying "I will be more consistent," decide what you will do next and when you will do it.\n\nA clear plan gives you something you can actually follow.\n\n## Close\n\nWhat is your next useful step?\n\nSay it out loud. Then give yourself a moment before you stop the recording.\n';
+let wakeLock = null;
 const editor = $('scriptEditor'), rendered = $('renderedContent'), scroller = $('prompterContent');
 
 function status(message, error = false) {
@@ -114,7 +116,14 @@ function playState() {
   $('statusText').textContent = playing ? 'Playing' : 'Paused';
   $('statusDot').classList.toggle('playing', playing);
 }
-function pause() { playing = false; cancelAnimationFrame(frame); frame = null; previousTime = null; playState(); }
+function keepAwake(on) {
+  // Best effort: ask the browser to keep the screen on while reading. Unsupported or refused requests are ignored.
+  try {
+    if (on && !wakeLock && navigator.wakeLock) navigator.wakeLock.request('screen').then(l => { if (playing) { wakeLock = l; l.addEventListener('release', () => { if (wakeLock === l) wakeLock = null; }); } else l.release(); }).catch(() => {});
+    else if (!on && wakeLock) { const l = wakeLock; wakeLock = null; l.release().catch(() => {}); }
+  } catch {}
+}
+function pause() { playing = false; cancelAnimationFrame(frame); frame = null; previousTime = null; keepAwake(false); playState(); }
 function tick(time) {
   if (!playing) return;
   if (Math.abs(scroller.scrollTop - scrollTarget) > 2) scrollTarget = scroller.scrollTop;
@@ -126,13 +135,14 @@ function tick(time) {
 function togglePlay() {
   if (playing) { pause(); return; }
   if (!loaded) { status('Load a script before playing.'); return; }
-  scrollTarget = scroller.scrollTop; playing = true; playState(); frame = requestAnimationFrame(tick);
+  scrollTarget = scroller.scrollTop; playing = true; playState(); keepAwake(true); frame = requestAnimationFrame(tick);
 }
 function reset() { pause(); scroller.scrollTop = 0; updatePosition(); }
 function applySettings() {
   for (const [key, id, display] of [['speed', 'speed', settings.speed.toFixed(1) + 'x'], ['fontSize', 'fontSize', settings.fontSize + 'px'], ['lineHeight', 'lineHeight', settings.lineHeight.toFixed(1)]]) {
     $(id + 'Slider').value = settings[key]; $(id + 'Value').textContent = display;
   }
+  $('speedReadout').textContent = settings.speed.toFixed(1) + 'x';
   rendered.style.fontSize = settings.fontSize + 'px'; rendered.style.lineHeight = settings.lineHeight;
   for (const [key, css] of [['mirrorH', 'mirror-h'], ['mirrorV', 'mirror-v']]) {
     rendered.classList.toggle(css, settings[key]); $(key).classList.toggle('active', settings[key]); $(key).setAttribute('aria-pressed', settings[key]);
@@ -150,7 +160,19 @@ function controls(open) {
   if (open) $('closeControls').focus(); else $('fullscreenBtn').focus();
 }
 function toggleControls() { const mobile = matchMedia('(max-width: 900px)').matches; controls(mobile ? !$('sidebar').classList.contains('open') : $('app').classList.contains('fullscreen')); }
+function nudgeSpeed(delta) { settings.speed = Math.round(Math.min(4, Math.max(.2, settings.speed + delta)) * 10) / 10; applySettings(); changed(); }
+function loadSample() {
+  if (editor.value.trim() && editor.value !== SAMPLE && !confirm('Replace the text in the editor with the sample script? Export your draft first if you need it.')) return;
+  editor.value = SAMPLE; changed();
+  if (renderScript()) { save(); if (matchMedia('(max-width: 900px)').matches) controls(false); }
+}
 $('fullscreenBtn').addEventListener('click', toggleControls);
+$('slowerBtn').addEventListener('click', () => nudgeSpeed(-.2));
+$('fasterBtn').addEventListener('click', () => nudgeSpeed(.2));
+$('trySample').addEventListener('click', loadSample);
+$('openEditor').addEventListener('click', () => { controls(true); document.querySelector('[data-tab=editor]').click(); editor.focus(); });
+// Tap or click the script to play/pause, so touch screens work with the controls closed.
+scroller.addEventListener('click', e => { if (!loaded || e.target.closest('button,a,input,textarea') || String(getSelection()).trim()) return; togglePlay(); });
 $('closeControls').addEventListener('click', () => controls(false));
 document.querySelectorAll('.tab').forEach(tab => tab.addEventListener('click', () => {
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t === tab));
@@ -201,7 +223,7 @@ document.addEventListener('keydown', e => {
   else if (key === 'End') scroller.scrollTop = scroller.scrollHeight;
   else if (key === 'ArrowLeft') scroller.scrollTop -= 50;
   else if (key === 'ArrowRight') scroller.scrollTop += 50;
-  else if (key === 'ArrowUp' || key === 'ArrowDown') { settings.speed = Math.round(Math.min(4, Math.max(.2, settings.speed + (key === 'ArrowUp' ? .2 : -.2))) * 10) / 10; applySettings(); changed(); }
+  else if (key === 'ArrowUp' || key === 'ArrowDown') nudgeSpeed(key === 'ArrowUp' ? .2 : -.2);
   else if (key === 'KeyH' || key === 'KeyV') { const name = key === 'KeyH' ? 'mirrorH' : 'mirrorV'; settings[name] = !settings[name]; applySettings(); changed(); }
   updatePosition();
 });
@@ -218,4 +240,6 @@ try {
   }
 } catch { protectedStored = true; status('Browser save could not be restored. It has not been overwritten. Import a backup or export new work.', true); }
 applySettings(); updatePosition();
+// index.html?sample opens with the sample script, but never replaces an existing browser save.
+if (/[?&]sample\b/.test(location.search) && knownStored === null && !protectedStored && !editor.value) { editor.value = SAMPLE; changed(); renderScript(); }
 $('fullscreenBtn').setAttribute('aria-expanded', !matchMedia('(max-width: 900px)').matches);
