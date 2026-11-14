@@ -1,6 +1,6 @@
 # PrompterPro (Teleprompter)
 
-Branch `readiness-20261019`. Worktree of the vault repo at `~/Documents/AnthoneyOS/Products/Teleprompter` (its `main` still holds the untouched January original).
+Branch `readiness-20261019`. Worktree of the vault repo at `~/AnthoneyOS/Products/Teleprompter` (its `main` still holds the untouched January original).
 
 ## Layout
 - `app/` - the product. Static files, no build step, no network requests. Open `app/index.html` directly or serve the folder.
